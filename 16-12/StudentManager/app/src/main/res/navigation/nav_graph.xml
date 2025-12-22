@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/studentListFragment">
+
+    <fragment
+        android:id="@+id/studentListFragment"
+        android:name="com.example.studentmanager.StudentListFragment"
+        android:label="Danh sách sinh viên">
+        <action
+            android:id="@+id/action_studentListFragment_to_addStudentFragment"
+            app:destination="@id/addStudentFragment" />
+        <action
+            android:id="@+id/action_studentListFragment_to_updateStudentFragment"
+            app:destination="@id/updateStudentFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/addStudentFragment"
+        android:name="com.example.studentmanager.AddStudentFragment"
+        android:label="Thêm sinh viên" />
+
+    <fragment
+        android:id="@+id/updateStudentFragment"
+        android:name="com.example.studentmanager.UpdateStudentFragment"
+        android:label="Cập nhật sinh viên">
+        <argument
+            android:name="position"
+            android:defaultValue="-1"
+            app:argType="integer" />
+        <argument
+            android:name="student"
+            app:argType="com.example.studentmanager.Student" />
+    </fragment>
+
+</navigation>
