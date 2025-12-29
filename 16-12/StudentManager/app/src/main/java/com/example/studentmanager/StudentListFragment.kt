@@ -14,12 +14,15 @@ import android.widget.ListView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.core.os.bundleOf
 
 class StudentListFragment : Fragment() {
 
-    private val viewModel: StudentViewModel by activityViewModels()
+    private val viewModel: StudentViewModel by activityViewModels {
+        StudentViewModelFactory(requireActivity().application)
+    }
 
     private lateinit var listView: ListView
     private lateinit var adapter: StudentAdapter

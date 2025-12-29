@@ -8,12 +8,15 @@ import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.studentmanager.databinding.FragmentAddStudentBinding
 
 class AddStudentFragment : Fragment() {
 
-    private val viewModel: StudentViewModel by activityViewModels()
+    private val viewModel: StudentViewModel by activityViewModels {
+        StudentViewModelFactory(requireActivity().application)
+    }
     private lateinit var binding: FragmentAddStudentBinding
 
     override fun onCreateView(

@@ -1,33 +1,57 @@
 package com.example.studentmanager
 
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.launch
 
-class StudentViewModel : ViewModel() {
+class StudentViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val _students = MutableLiveData<MutableList<Student>>(mutableListOf())
-    val students: LiveData<MutableList<Student>> = _students
+    private val repository: StudentRepository = (application as StudentApplication).repository
+
+    val students: LiveData<List<Student>> = repository.allStudents
 
     fun addStudent(student: Student) {
-        val current = _students.value ?: mutableListOf()
-        current.add(student)
-        _students.value = current
+        repository.insertStudent(student)
     }
 
-    fun updateStudent(position: Int, student: Student) {
-        val current = _students.value ?: return
-        if (position in current.indices) {
-            current[position] = student
-            _students.value = current
+    fun updateStudent(oldMssv: String, student: Student) {
+        viewModelScope.launch {
+            // Cập nhật bằng MSSV để đảm bảo đúng record trong database
+            val updatedStudent = Student(
+                mssv = oldMssv, // Giữ nguyên MSSV cũ (primary key)
+                hoTen = student.hoTen,
+                soDienThoai = student.soDienThoai,
+                diaChi = student.diaChi
+            )
+            repository.updateStudent(updatedStudent)
+        }
+    }
+
+    fun updateStudentByPosition(position: Int, student: Student) {
+        viewModelScope.launch {
+            val currentList = students.value ?: return@launch
+            if (position in currentList.indices) {
+                val oldStudent = currentList[position]
+                updateStudent(oldStudent.mssv, student)
+            }
         }
     }
 
     fun deleteStudent(position: Int) {
-        val current = _students.value ?: return
-        if (position in current.indices) {
-            current.removeAt(position)
-            _students.value = current
+        viewModelScope.launch {
+            val currentList = students.value ?: return@launch
+            if (position in currentList.indices) {
+                repository.deleteStudent(currentList[position])
+            }
+        }
+    }
+
+    fun getStudentByMssv(mssv: String, callback: (Student?) -> Unit) {
+        viewModelScope.launch {
+            val student = repository.getStudentByMssv(mssv)
+            callback(student)
         }
     }
 }
